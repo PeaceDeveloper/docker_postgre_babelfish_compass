@@ -3,6 +3,6 @@
 docker compose up --build -d
 
 # RUN BABELFISH COMPASS COMANDS
-docker compose exec -it babelfish_compass bash
-cd BabelfishCompass
-./BabelfishCompass.sh -help
+1. docker compose exec -it babelfish_compass bash
+2. cd BabelfishCompass
+3. ./BabelfishCompass.sh -help
