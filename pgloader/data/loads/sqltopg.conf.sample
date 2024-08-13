@@ -1,0 +1,16 @@
+load database
+    from mssql://user:password@server/database
+    into postgresql://user:password@server:pord/database
+
+with include drop, create tables, create indexes, reset sequences, foreign keys, schema only
+
+SET work_mem to '16MB', maintenance_work_mem to '512 MB'
+
+CAST type geography to geography,
+    type geometry to geometry
+     
+
+including only table names like 'candidate' in schema 'candidate'
+
+before load do
+    $$ create extension if not exists postgis; $$;

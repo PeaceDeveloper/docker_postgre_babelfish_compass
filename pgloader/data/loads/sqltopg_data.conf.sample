@@ -1,0 +1,11 @@
+LOAD CSV
+     FROM '/pgloader/queryresults/candidate.csv'
+     into postgresql://user:password@server/database?tablename=candidate.candidate
+
+WITH
+     fields terminated by ','
+
+SET client_encoding to 'utf8', work_mem to '12MB', standard_conforming_strings to 'on'
+
+BEFORE LOAD DO
+    $$ truncate candidate.candidate $$;

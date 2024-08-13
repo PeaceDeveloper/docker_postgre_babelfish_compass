@@ -1,0 +1,1 @@
+bcp "SELECT * from table" queryout "queryresults/candidate.csv" -c -t, -S server -U user -P password

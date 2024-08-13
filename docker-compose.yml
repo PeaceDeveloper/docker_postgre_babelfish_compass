@@ -1,22 +1,33 @@
-version: '3.8'
+version: "3.9"
+
 
 services:
   babelfish_compass:
-    build: .
+    build:
+      context: .
+      dockerfile: ./babelfishcompass/Dockerfile
     container_name: babelfish_compass
     volumes:
-      - ./data:/data
+      - ./babelfishcompass/ata:/data
+      - ./babelfishcompass/data:/root/BabelfishCompassReports
+      - ./babelfishcompass/data:/tmp/
 
-#   postgres:
-#     image: postgres:13
-#     container_name: postgres
-#     environment:
-#       POSTGRES_USER: postgres
-#       POSTGRES_PASSWORD: postgres
-#     volumes:
-#       - postgres_data:/var/lib/postgresql/data
-#     ports:
-#       - "5432:5432"
+  # pgloader:
+  #   image: dimitri/pgloader:latest
+  #   container_name: pgloader
+  #   volumes:
+  #     - ./pgloader:/pgloader
+  #     - ./data:/data
+  #     - ./tdsconf:/etc/freetds
+  #   command: tail -f /dev/null  # Keeps the container running
+  #   restart: always  # Ensures the container restarts if it stops
 
-# volumes:
-#   postgres_data:
+  pgloader:
+    build: 
+      context: .
+      dockerfile: ./pgloader/Dockerfile
+    container_name: pgloader
+    volumes:
+      - ./pgloader/data:/pgloader
+      - ./pgloader/tdsconf:/etc/freetds
+    restart: always
