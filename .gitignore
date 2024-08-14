@@ -1,3 +1,5 @@
 *.conf
 *.sh
 /babelfishcompass/data
+*.env
+*.csv

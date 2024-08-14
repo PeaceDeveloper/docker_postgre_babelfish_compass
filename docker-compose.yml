@@ -31,3 +31,5 @@ services:
       - ./pgloader/data:/pgloader
       - ./pgloader/tdsconf:/etc/freetds
     restart: always
+    env_file:
+      - ./pgloader/.env

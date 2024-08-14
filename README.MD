@@ -15,8 +15,10 @@ docker compose up --build -d
 
 3. check reports and ddl files
 
-# DATA MIGRATION WITH PGLOADER AND BCP
+# SCHEMA MIGRATION WITH PGLOADER
 1. docker compose exec -it pgloader bash
 2. /opt/pgloader/build/bin/pgloader --debug loads/sqltopg.conf
+
+# DATA MIGRATION WITH BCP AND PSQL
 3. queryresults/retriever.sh
 4. /opt/pgloader/build/bin/pgloader --debug loads/sqltopg_data.conf

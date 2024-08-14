@@ -1,6 +1,6 @@
 load database
     from mssql://user:password@server/database
-    into postgresql://user:password@server:pord/database
+    into postgresql://user:password@server:port/database
 
 with include drop, create tables, create indexes, reset sequences, foreign keys, schema only
 

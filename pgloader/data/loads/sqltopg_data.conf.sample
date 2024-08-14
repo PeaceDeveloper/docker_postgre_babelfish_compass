@@ -1,9 +1,17 @@
 LOAD CSV
-     FROM '/pgloader/queryresults/candidate.csv'
-     into postgresql://user:password@server/database?tablename=candidate.candidate
-
-WITH
-     fields terminated by ','
+     FROM '/pgloader/queryresults/candidate.csv' WITH ENCODING UTF-8
+        HAVING FIELDS
+        (
+           Id, FirstName, LastName, TotalYearsExperienceInMonths, ExternalId, TalentProfileId, CarrerSummary, PositionTitle, Error, UpdatedAt, PlaceId, SpatialLocation, GeodataId, CountryId, Location
+        )
+     into postgresql://user:password@server/database
+     TARGET TABLE candidate.candidate
+     TARGET COLUMNS
+        (
+           Id, FirstName, LastName, TotalYearsExperienceInMonths, ExternalId, TalentProfileId, CarrerSummary, PositionTitle, Error, UpdatedAt, PlaceId, SpatialLocation, GeodataId, CountryId, Location
+        )
+    WITH
+        fields terminated by '|', null if ''
 
 SET client_encoding to 'utf8', work_mem to '12MB', standard_conforming_strings to 'on'
 

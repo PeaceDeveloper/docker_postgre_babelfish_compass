@@ -1,1 +1,62 @@
-bcp "SELECT * from table" queryout "queryresults/candidate.csv" -c -t, -S server -U user -P password
+#!/bin/bash
+
+LIMIT=100
+OFFSET=0
+BATCH_SIZE=100
+
+while true; do
+
+  echo "Fetching rows $OFFSET to $((OFFSET + BATCH_SIZE))"
+
+  # Retrieve the IDs already imported into PostgreSQL
+  IMPORTED_IDS=$(psql -h 54.169.127.126 -U postgres -d test -t -c "SELECT Id FROM candidate.candidate")
+
+  # Convert the guid's as 'fasfasfd-asfdasfdsafd' into a comma-separated list
+  IMPORTED_IDS_LIST=$(echo $IMPORTED_IDS | sed -e "s/ /','/g" -e "s/^/'/" -e "s/$/'/")
+
+  bcp "SELECT
+          [Id]
+        ,QUOTENAME([FirstName], '\"') as FirstName
+        ,QUOTENAME([LastName], '\"') as LastName
+        ,[TotalYearsExperienceInMonths]
+        ,[ExternalId]
+        ,[TalentProfileId]
+        ,'\"' + REPLACE([CarrerSummary], '\"', '\"\"') + '\"' AS CarrerSummary
+        ,QUOTENAME([PositionTitle], '\"') as PositionTitle
+        ,QUOTENAME([Error], '\"') as Error
+        ,[UpdatedAt]
+        ,[PlaceId]
+        ,[SpatialLocation].STAsText() as SpatialLocation
+        ,[GeodataId]
+        ,[CountryId]
+        ,QUOTENAME([Location], '\"') as Location
+    FROM [test].[candidate].[Candidate] 
+    WHERE [Id] NOT IN ($IMPORTED_IDS_LIST)
+    ORDER BY [UpdatedAt]
+    OFFSET $OFFSET ROWS
+    FETCH NEXT $LIMIT ROWS ONLY
+    " queryout "queryresults/candidate.csv" -c -t"|" -S $SQLSERVER -U $SQLUSER -P $SQLPASSWORD -a 32767
+
+    # Check if the output file is empty (no more rows to fetch)
+  if [ ! -s "queryresults/candidate.csv" ]; then
+    break
+  fi
+
+  # Set the PostgreSQL password
+  # export PGPASSWORD='eEl1e8ejVGEzm17pJCyb'
+  if [ -z "$PGPASSWORD" ]; then
+    echo "Error: PGPASSWORD environment variable is not set."
+    exit 1
+  fi
+
+  psql -h $PGSERVER -U $PGUSER -d test -c "\COPY candidate.candidate (Id, FirstName, LastName, TotalYearsExperienceInMonths, ExternalId, TalentProfileId, CarrerSummary, PositionTitle, Error, UpdatedAt, PlaceId, SpatialLocation, GeodataId, CountryId, Location) FROM 'queryresults/candidate.csv' WITH (FORMAT csv, HEADER false, DELIMITER '|', NULL '');"
+
+  # Break the loop if psql command returns an error
+  if [ $? -ne 0 ]; then
+    echo "Error occurred during psql command execution. Exiting loop."
+    break
+  fi
+
+  # Increment the offset
+  OFFSET=$((OFFSET + BATCH_SIZE))
+done

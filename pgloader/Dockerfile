@@ -21,6 +21,8 @@ RUN cd /opt/pgloader && make save
 #install vi
 RUN apt-get update && apt-get install -y vim
 
+RUN apt-get install -y postgresql postgresql-contrib
+
 RUN apt-get install -y unixodbc
 
 RUN apt-get update -y && apt-get install -y curl gnupg g++ unixodbc-dev
